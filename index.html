@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이미지 파일 형식 변환하기</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        background-color: rgb(53, 54, 58); 
+        color: #ffffff; 
+    }
+    h1 {
+        margin-top: 50px;
+    }
+    label {
+        display: inline-block;
+        margin-top: 20px;
+    }
+    input[type="text"] {
+        width: 300px;
+        padding: 8px;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    #imagePreview {
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+<h1>이미지 파일 형식 변환하기</h1>
+
+<label for="image">이미지 선택:</label><br>
+<input type="file" id="image" accept="image/*"><br><br>
+
+<label for="imageUrl">이미지 URL 입력:</label><br>
+<input type="text" id="imageUrl"><br><br>
+
+<label for="imageName">다운로드할 이미지 이름:</label><br>
+<input type="text" id="imageName" placeholder="converted_image.png"><br><br>
+
+<button onclick="convertImage()">변환하기</button>
+
+<div id="imagePreview"></div>
+
+<script>
+function convertImage() {
+    var fileInput = document.getElementById('image');
+    var imageUrlInput = document.getElementById('imageUrl');
+    var imageNameInput = document.getElementById('imageName');
+
+    var imageName = imageNameInput.value.trim() || 'converted_image.png';
+
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+        convertFileImage(file, imageName);
+    } else if (imageUrlInput.value.trim() !== '') {
+        var imageUrl = imageUrlInput.value;
+        convertUrlImage(imageUrl, imageName);
+    } else {
+        alert('이미지를 선택하거나 이미지 URL을 입력하세요.');
+    }
+}
+
+function convertFileImage(file, imageName) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = new Image();
+        img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            
+            
+            var newDataUrl = canvas.toDataURL('image/png');
+            
+            
+            var link = document.createElement('a');
+            link.href = newDataUrl;
+            link.download = imageName;
+            link.click();
+        }
+        img.src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+}
+
+function convertUrlImage(imageUrl, imageName) {
+    var img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        
+        
+        var newDataUrl = canvas.toDataURL('image/png');
+        
+        
+        var link = document.createElement('a');
+        link.href = newDataUrl;
+        link.download = imageName;
+        link.click();
+    }
+    img.src = imageUrl;
+}
+</script>
+
+</body>
+</html>
